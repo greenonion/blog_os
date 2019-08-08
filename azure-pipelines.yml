@@ -31,6 +31,20 @@ steps:
   continueOnError: true
 
 - script: |
+    choco install qemu --limit-output --no-progress
+    dir "C:"
+    dir "C:\Program Files"
+    dir "C:\Program Files\qemu"
+    dir "C:\Program Files (x86)"
+    dir "C:\Program Files (x86)\qemu"
+    echo ##vso[task.prependpath]C:\Program Files\qemu
+  condition: eq( variables['Agent.OS'], 'Windows_NT' )
+  displayName: 'Install QEMU (Windows)'
+
+- script: qemu-system-x86_64 --version
+  displayName: 'Print QEMU version'
+
+- script: |
     curl https://sh.rustup.rs -sSf | sh -s -- -y --default-toolchain $RUSTUP_TOOLCHAIN
     echo "##vso[task.setvariable variable=PATH;]$PATH:$HOME/.cargo/bin"
   condition: or(eq( variables['Agent.OS'], 'Linux' ),  eq( variables['Agent.OS'], 'Darwin' ))
